@@ -1,0 +1,148 @@
+name: Publication
+on: [push]
+
+
+jobs:
+
+  centos8_p38:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Checkout all history for all branches and tags.
+      - name: Get file changes
+        id: changed_files
+        run : |
+          ALL_CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | tr '\n' ' ')
+          echo "::set-output name=all_changed_files::$ALL_CHANGED_FILES"
+      - name: Verify changes
+        id: changed
+        run: |
+          export IS_CHANGED=
+          for file in ${{ steps.changed_files.outputs.all_changed_files }}; do
+            if [[ $file == *"centos8_p38"* ]] || [[ $file == *"actions-publish-images.yml"* ]]; then
+              export IS_CHANGED=true
+            fi
+          done
+          echo $IS_CHANGED
+          echo "::set-output name=is_changed::$IS_CHANGED"
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: Dryslope
+          password: ${{ secrets.PERSONAL_TOKEN }}
+      - name: Build
+        if: contains(steps.changed.outputs.is_changed, 'true')
+        run : docker build -t ghcr.io/dryslope/centos8_p38:latest centos8_p38/
+      - name: Push
+        if: contains(steps.changed.outputs.is_changed, 'true')
+        run : docker push ghcr.io/dryslope/centos8_p38:latest
+
+  centos8_p36:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Checkout all history for all branches and tags.
+      - name: Get file changes
+        id: changed_files
+        run : |
+          ALL_CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | tr '\n' ' ')
+          echo "::set-output name=all_changed_files::$ALL_CHANGED_FILES"
+      - name: Verify changes
+        id: changed
+        run: |
+          export IS_CHANGED=
+          for file in ${{ steps.changed_files.outputs.all_changed_files }}; do
+            if [[ $file == *"centos8_p36"* ]] || [[ $file == *"actions-publish-images.yml"* ]]; then
+              export IS_CHANGED=true
+            fi
+          done
+          echo $IS_CHANGED
+          echo "::set-output name=is_changed::$IS_CHANGED"
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: Dryslope
+          password: ${{ secrets.PERSONAL_TOKEN }}
+      - name: Build
+        if: contains(steps.changed.outputs.is_changed, 'true')
+        run : docker build -t ghcr.io/dryslope/centos8_p36:latest centos8_p36/
+      - name: Push
+        if: contains(steps.changed.outputs.is_changed, 'true')
+        run : docker push ghcr.io/dryslope/centos8_p36:latest
+
+  mock_smtp_server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Checkout all history for all branches and tags.
+      - name: Get file changes
+        id: changed_files
+        run : |
+          ALL_CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | tr '\n' ' ')
+          echo "::set-output name=all_changed_files::$ALL_CHANGED_FILES"
+      - name: Verify changes
+        id: changed
+        run: |
+          export IS_CHANGED=
+          for file in ${{ steps.changed_files.outputs.all_changed_files }}; do
+            if [[ $file == *"mock_smtp_server"* ]] || [[ $file == *"actions-publish-images.yml"* ]]; then
+              export IS_CHANGED=true
+            fi
+          done
+          echo "::set-output name=is_changed::$IS_CHANGED"
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: Dryslope
+          password: ${{ secrets.PERSONAL_TOKEN }}
+      - name: Build
+        if: contains(steps.changed.outputs.is_changed, 'true')
+        run : docker build -t ghcr.io/dryslope/mock_smtp_server:latest mock_smtp_server/
+      - name: Push
+        if: contains(steps.changed.outputs.is_changed, 'true')
+        run : docker push ghcr.io/dryslope/mock_smtp_server:latest
+
+
+  custom_lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Checkout all history for all branches and tags.
+      - name: Get file changes
+        id: changed_files
+        run : |
+          ALL_CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | tr '\n' ' ')
+          echo "::set-output name=all_changed_files::$ALL_CHANGED_FILES"
+      - name: Verify changes
+        id: changed
+        run: |
+          export IS_CHANGED=
+          for file in ${{ steps.changed_files.outputs.all_changed_files }}; do
+            if [[ $file == *"custom_lint"* ]] || [[ $file == *"actions-publish-images.yml"* ]]; then
+              export IS_CHANGED=true
+            fi
+          done
+          echo "::set-output name=is_changed::$IS_CHANGED"
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: Dryslope
+          password: ${{ secrets.PERSONAL_TOKEN }}
+      - name: Build
+        if: contains(steps.changed.outputs.is_changed, 'true')
+        run : docker build -t ghcr.io/dryslope/custom_lint:latest custom_lint/
+      - name: Push
+        if: contains(steps.changed.outputs.is_changed, 'true')
+        run : docker push ghcr.io/dryslope/custom_lint:latest
